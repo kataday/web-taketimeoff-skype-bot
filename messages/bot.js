@@ -16,7 +16,7 @@ const bot = new builder.UniversalBot(connector);
 bot.localePath(path.join(__dirname, './locale'));
 
 bot.dialog('/', [(session, args, next) => {
-    const card = new builder.ThumbnailCard(session).images(null);
+    const card = new builder.HeroCard(session).images(null);
     card.buttons([
       new builder.CardAction(session).title('有給休暇').value('paidVacation').type('imBack')
     ]).text(`どの休暇を申請しますか？`);
