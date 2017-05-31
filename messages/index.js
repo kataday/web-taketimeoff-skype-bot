@@ -22,10 +22,10 @@ var restify = require('restify');
 var calling = require('botbuilder-calling');
 
 // Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url);
-});
+// var server = restify.createServer();
+// server.listen(process.env.port || process.env.PORT || 3978, function () {
+//    console.log('%s listening to %s', server.name, server.url);
+// });
 
 // Create calling bot
 var connector = new calling.CallConnector({
@@ -34,9 +34,13 @@ var connector = new calling.CallConnector({
     appPassword: process.env['MicrosoftAppPassword']
 });
 var bot = new calling.UniversalCallBot(connector);
-server.post('/api/calls', connector.listen());
+// server.post('/api/calls', connector.listen());
 
 // Add root dialog
 bot.dialog('/', function (session) {
     session.send('Watson... come here!');
 });
+
+module.exports = {
+  default: bot.connector('*').listen()
+}
