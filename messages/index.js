@@ -9,10 +9,10 @@ if (useEmulator) {
   server.listen(3978, function() {
     console.log('bot endpont at http://localhost:3978/api/messages');
   });
-  server.post('/api/messages', bot.connector('*').listen());
+  // server.post('/api/messages', bot.connector('*').listen());
+  server.post('/api/calls', bot.connector.listen());
 } else {
   module.exports = {
-    // default: connector.listen();
     default: bot.connector('*').listen()
   }
 }
