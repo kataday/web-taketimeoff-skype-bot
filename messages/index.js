@@ -18,7 +18,7 @@
 // }
 
 
-var restify = require('restify');
+// var restify = require('restify');
 var calling = require('botbuilder-calling');
 
 // Setup Restify Server
