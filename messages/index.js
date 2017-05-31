@@ -42,5 +42,5 @@ bot.dialog('/', function (session) {
 });
 
 module.exports = {
-  default: connector('*').listen()
+  default: connector.listen()
 }
