@@ -29,7 +29,7 @@ var calling = require('botbuilder-calling');
 
 // Create calling bot
 var connector = new calling.CallConnector({
-    callbackUrl: 'https://localhost:3978/api/calls',
+    callbackUrl: 'https://web-taketimeoff.azurewebsites.net/api/calls?code=lR3d4p4tS9zpmuNEr7urorZAmLGgi/euuVajgiJABmDdAYC0N9ddjw==',
     appId: process.env['MicrosoftAppId'],
     appPassword: process.env['MicrosoftAppPassword']
 });
