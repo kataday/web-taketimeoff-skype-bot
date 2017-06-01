@@ -24,7 +24,7 @@ bot.dialog('/', [(session, args, next) => {
     const message = new builder.Message(session);
     message.addAttachment(card);
 
-    session.send(`こんにちは。休暇申請のお手伝いをさせて頂きます。\n\nあああ`);
+    session.send(`こんにちは。休暇申請のお手伝いをさせて頂きます。`);
     session.endConversation(message);
   }
 ]);
@@ -32,12 +32,22 @@ bot.dialog('/', [(session, args, next) => {
 bot.dialog('有給休暇', [
   (session, args, next) => {
     session.send(`有給休暇申請ですね。取得する日を教えてください。`);
-    session.beginDialog('/ensureDate');
+    session.beginDialog('/editDate');
   },
   (session, result) => {
     session.send(`${result.takeDate}ですね。`);
+    session.privateConversationData.takeDate = result.takeDate;
 
-    // session.endConversation(`${result.takeDate}ですね。`);
+    const card = new builder.HeroCard(session).images(null);
+    card.buttons([
+      new builder.CardAction(session).title('OK').value('ok').type('imBack'),
+      new builder.CardAction(session).title('日付を訂正する').value('日付を訂正する').type('imBack')
+    ]).text(`これでよろしいですか？`);
+
+    const message = new builder.Message(session);
+    message.addAttachment(card);
+
+    session.send(message);
   }
 ])
 .triggerAction({matches: /^有給休暇/i})
@@ -56,7 +66,7 @@ bot.dialog('有給休暇', [
 //   }
 // });
 
-bot.dialog('/ensureDate', [
+bot.dialog('/editDate', [
   (session, args, next) => {
     if (!session.privateConversationData.year) {
       builder.Prompts.number(session, `何年ですか？`, {maxRetries: 3});
@@ -91,5 +101,47 @@ bot.dialog('/ensureDate', [
     session.endDialogWithResult({ takeDate: `${session.privateConversationData.year}年${session.privateConversationData.month}月${session.privateConversationData.day}日` });
   }
 ]);
+
+bot.dialog('ok', [
+  (session, args, next) => {
+    console.log(session.privateConversationData.takeDate);
+  }
+])
+.triggerAction({matches: /^ok/i})
+// .cancelAction('CancelTakePaidVacation', '中止しました。', {
+//   matches: /^cancel$/,
+//   onSelectAction: (session, args) => {
+//     session.endConversation(`中止しました。`);
+//   },
+//   confirmPrompt: `本当に中止しても良いですか？`
+// })
+// .beginDialogAction('Total', 'Total', {matches: /^total$/})
+// .beginDialogAction('HelpAddNumber', 'Help', {
+//   matches: /^help$/,
+//   dialogArgs: {
+//     action: 'AddNumber'
+//   }
+// });
+
+bot.dialog('日付を訂正する', [
+  (session, args, next) => {
+    console.log(session.privateConversationData.takeDate);
+  }
+])
+.triggerAction({matches: /^日付を訂正する/i})
+// .cancelAction('CancelTakePaidVacation', '中止しました。', {
+//   matches: /^cancel$/,
+//   onSelectAction: (session, args) => {
+//     session.endConversation(`中止しました。`);
+//   },
+//   confirmPrompt: `本当に中止しても良いですか？`
+// })
+// .beginDialogAction('Total', 'Total', {matches: /^total$/})
+// .beginDialogAction('HelpAddNumber', 'Help', {
+//   matches: /^help$/,
+//   dialogArgs: {
+//     action: 'AddNumber'
+//   }
+// });
 
 module.exports = bot;
