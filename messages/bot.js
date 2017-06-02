@@ -31,41 +31,71 @@ bot.dialog('/', [(session, args, next) => {
 
 bot.dialog('有給休暇', [
   (session, args, next) => {
-    session.send(`有給休暇申請ですね。取得する日を教えてください。`);
+    if(
+      !session.privateConversationData.year &&
+      !session.privateConversationData.month &&
+      !session.privateConversationData.day
+    ) {
+      session.send(`有給休暇申請ですね。取得する日を教えてください。`);
+    }
+
     session.beginDialog('/editDate');
   },
   (session, result) => {
     session.send(`${result.takeDate}ですね。`);
     session.privateConversationData.takeDate = result.takeDate;
 
-    builder.Prompts.confirm(session, `これで良いですか？`, {maxRetries: 3});
-    // var msg = new builder.Message(session)
-    //     .text("選択してください")
-    //     .suggestedActions(
-    //       builder.SuggestedActions.create(session, [
-    //         builder.CardAction.imBack(session, "yes", "はい"),
-    //         builder.CardAction.imBack(session, "no", "いいえ")
-    //       ])
-    //     );
-    // session.send(msg);
+    // builder.Prompts.confirm(session, `これで良いですか？`, {maxRetries: 3});
+    // const card = new builder.HeroCard(session).images(null);
+    // card.buttons([
+    //   new builder.CardAction(session).title('はい').value('yes').type('imBack'),
+    //   new builder.CardAction(session).title('日付を訂正する').value('no').type('imBack')
+    // ])
+    //
+    // const message = new builder.Message(session);
+    // message.addAttachment(card);
+    //
+    // session.send(message);
 
-    const card = new builder.HeroCard(session).images(null);
-    card.buttons([
-      // new builder.CardAction(session).title('OK').value('ok').type('imBack'),
-      // new builder.CardAction(session).title('日付を訂正する').value('日付を訂正する').type('imBack')
-      new builder.CardAction(session).title('はい').value('yes').type('imBack'),
-      new builder.CardAction(session).title('いいえ').value('no').type('imBack')
-    ])
-    // .text(`これでよろしいですか？`);
+    // TODO: confirm()の選択肢として、「yes/no」以外が設定できないか？
+    // builder.Prompts.confirm(session, `これで良いですか？`, {
+    //   maxRetries: 3,
+    //   listStyle: builder.ListStyle.button
+    // });
 
-    const message = new builder.Message(session);
-    message.addAttachment(card);
-
-    session.send(message);
+    builder.Prompts.choice(session, `これで良いですか？`, {
+      'はい': true,
+      '日付を訂正する': false
+    }, {
+      listStyle: builder.ListStyle.button
+    });
   },
-  (session, args, result) => {
-    console.log(args);
-    console.log(result);
+  (session, results, next) => {
+    console.log(results);
+    if (!results.response.index) {
+      session.send('ここまでは良い感じ');
+    } else {
+        // 日付を訂正するため、年月日のどれを訂正するか選択してもらう
+        builder.Prompts.choice(session, `訂正する項目を選択してください。`, {
+          '年': 'year',
+          '月': 'month',
+          '日': 'day'
+        }, {
+          listStyle: builder.ListStyle.button
+        });
+    }
+  },
+  (session, results, next) => {
+    if (results.response) {
+      if(results.response.index == 0) session.privateConversationData.year = null;
+      if(results.response.index == 1) session.privateConversationData.month = null;
+      if(results.response.index == 2) session.privateConversationData.day = null;
+
+      session.beginDialog('/editDate');
+    }
+  },
+  (session, results, next) => {
+    session.replaceDialog('有給休暇');
   }
 ])
 .triggerAction({matches: /^有給休暇/i})
