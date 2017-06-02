@@ -192,4 +192,11 @@ bot.dialog('日付を訂正する', [
 //   }
 // });
 
+bot.dialog('reset', [
+  (session, args, next) => {
+    session.endConversation('一旦リセット処理完了');
+  }
+])
+.triggerAction({matches: /^reset/i})
+
 module.exports = bot;
