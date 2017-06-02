@@ -38,16 +38,34 @@ bot.dialog('有給休暇', [
     session.send(`${result.takeDate}ですね。`);
     session.privateConversationData.takeDate = result.takeDate;
 
+    builder.Prompts.confirm(session, `これで良いですか？`, {maxRetries: 3});
+    // var msg = new builder.Message(session)
+    //     .text("選択してください")
+    //     .suggestedActions(
+    //       builder.SuggestedActions.create(session, [
+    //         builder.CardAction.imBack(session, "yes", "はい"),
+    //         builder.CardAction.imBack(session, "no", "いいえ")
+    //       ])
+    //     );
+    // session.send(msg);
+
     const card = new builder.HeroCard(session).images(null);
     card.buttons([
-      new builder.CardAction(session).title('OK').value('ok').type('imBack'),
-      new builder.CardAction(session).title('日付を訂正する').value('日付を訂正する').type('imBack')
-    ]).text(`これでよろしいですか？`);
+      // new builder.CardAction(session).title('OK').value('ok').type('imBack'),
+      // new builder.CardAction(session).title('日付を訂正する').value('日付を訂正する').type('imBack')
+      new builder.CardAction(session).title('はい').value('yes').type('imBack'),
+      new builder.CardAction(session).title('いいえ').value('no').type('imBack')
+    ])
+    // .text(`これでよろしいですか？`);
 
     const message = new builder.Message(session);
     message.addAttachment(card);
 
     session.send(message);
+  },
+  (session, args, result) => {
+    console.log(args);
+    console.log(result);
   }
 ])
 .triggerAction({matches: /^有給休暇/i})
